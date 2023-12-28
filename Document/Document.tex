@@ -24,8 +24,6 @@
   escapeinside={\%*}{*)},          % if you want to add LaTeX within your code
   keywordstyle=\color{blue},       % keyword style
   stringstyle=\color{mymauve},     % string literal style
-  keywords=[3]{Vector3,MeshCollider,Quaternion,Random,Gizmos,Collider,Time},
-  keywordstyle=[3]{\color{green!30!black}},
 }
 
 \usepackage[font=small,labelfont=bf]{caption}
@@ -119,7 +117,7 @@
 \clearpage
 
 \begin{abstract}
-\noindent The project goal was to create an agent roaming on a platform while never moving along a straight line. More details were provided by the professors as follow:
+\noindent The project goal was to create an agent roaming on a platform while never moving along a straight line. More details were provided by the professors as follows:
 \begin{itemize}
 \item The platform can be of any size; square or rectangular.
 \item The agent will change trajectory at random intervals. Each time the agent will travel over a
@@ -129,25 +127,26 @@ circumference leading first to right then to the left, then to the right again â
 in the range (0, 10] seconds. Note that 0 is excluded.
 \item Then, the agent selects a random circumference leading right or left with a radius between 0
 (excluded) and the maximum radius that is not making the agent fall off the platform.
-\item The selection of the radius is independent from the time of the next trajectory change.
+\item The selection of the radius is independent of the time of the next trajectory change.
 \item The agent never stops moving.
 \item The system must work independently on the platform shape or size.
 \end{itemize}
 \end{abstract}
 
 \section{Scene setup}
+The project main scene is \textbf{Assets/Scenes/Main.unity}.
 \subsection{Agent}
-As the agent movement is quite simple and does not have any complex physical simulation \textbf{kinematic movement} was chosen. This mean the agent does not have any rigid body component and it's movement is not managed
-in any way by the Unity phycis engine.\\
-It should be noted that it's not affected by gravity, but given the constraint that the agent should never fall off the platform it should make no difference in the resulting behaviour.\\\\
-The agent still have a \textbf{capsule collider} that is used to determinate its own radius to avoid having half the agent off the platform.
-\subsection{Plaftform}
-The platform is a simple plane with a \textbf{mesh collider}, as Unity does not provide a plane collider the default plane uses this. The agent code will hold a reference to the platform mesh collider.\\\\
-The platform size is quite small to better test the interaction at the edges and to allow to see the whole platform in the camera. Bigger platform size lead to bigger radius giving more belivable results.
+As the agent movement is quite simple and does not require any complex physical simulation \textbf{kinematic movement} was chosen. This means that the agent does not have any rigid body component and its movement is not managed
+in any way by the Unity physics engine.
+It should be noted that it is not affected by gravity, but given the constraint that the agent should never fall off the platform it makes no difference in the resulting behavior.\\\\
+The agent still has a \textbf{capsule collider} that is used to determine its own radius to avoid having half of the agent off the platform.
+\subsection{Platform}
+The platform is a simple plane with a \textbf{mesh collider}, as the default plane uses this. The agent code will hold a reference to the platform mesh collider.\\\\
+The platform size is quite small to better test the interaction at the edges and to allow to see the whole platform in the camera. Although bigger platform size lead to bigger radius giving more believable results.
 
 \section{Agent script}
 \subsection{Public attributes}
-The Agent class have few public attribute to allow some configuration from the Unity inspector.
+The Agent class has few public attributes to allow some configuration from the Unity inspector.
 \begin{lstlisting}[caption={Public attributes}]
     [Range(0.5f, 20.0f)]
     public float maxDecisionInterval = 10.0f;
@@ -158,16 +157,16 @@ The Agent class have few public attribute to allow some configuration from the U
     public bool drawDebugGizmos = false;
     public MeshCollider platform;
 \end{lstlisting}
-The \textbf{maxDecisionInterval} and \textbf{speed} are set to a default value as asked by the specifications.\\\\
-The value \textbf{maxRotationSpeed} controls the maximun rotation speed, this is used to avoid too fast spinning when a really small radius is randomly selected.\\\\
-The flag \textbf{drawDebugGizmos} enables the rendering of the maximum radius that is not making the agent fall off the platform and the current selected circulat trajectory.\\\\
-A reference to the plaftform \textbf{MeshCollider} allow to query for its size and rotation along the Y axis.
-It would be possible to use a \textbf{Collider} reference instead making it working also with a \textbf{BoxCollider}, this choise however would make the support of rotation on the Y axis troublesome.\\\\
-From a \textbf{Collider} it is possible only to query the \textbf{world aligned bounds} making it impossible to query the actual height and width of the plaftform.
-As the plaftform is a plane and by defaults Unity uses a \textbf{MeshCollider} for planes it was prefered to mantain the support for rotations rather than supporting a \textbf{BoxCollider} too.
+The \textbf{maxDecisionInterval} and \textbf{speed} are set to a default value as required by the specifications.\\\\
+The value of \textbf{maxRotationSpeed} controls the maximum rotation speed, this is used to avoid unrealistic fast spinning when a minuscule radius is randomly selected.\\\\
+The flag \textbf{drawDebugGizmos} enables the rendering of the maximum radius that is not making the agent fall off the platform and the current selected circular trajectory.\\\\
+A reference to the platform \textbf{MeshCollider} allows querying for its size and rotation along the Y axis.
+It would be possible to use a \textbf{Collider} reference instead making it working also with a \textbf{BoxCollider}, this choice however would make the support of rotations on the Y axis troublesome.\\\\
+From a \textbf{Collider} it is only possible to query the \textbf{world aligned bounds} making it impossible to query the actual height and width of the platform.
+As the platform is a plane and, by defaults, Unity uses a \textbf{MeshCollider} for planes it was preferred to maintain the support for rotations rather than supporting \textbf{BoxCollider} too.
 
 \subsection{Private attributes}
-The Agent class hold 3 privates attributes.
+The Agent class has 3 private attributes.
 \begin{lstlisting}[caption={Private attributes}]
     private float _direction = 1.0f;
     private Vector3 _circleCenter;
@@ -177,10 +176,10 @@ The attributes \textbf{\_circleCenter} and \textbf{\_circleRadius} keep track of
 
 \subsection{Decision procedure}
 To choose the next circular trajectory at random intervals a \textbf{coroutine} was used.\\\\
-The coroutine \textbf{ChooseNextCircle()} is a infinite loop that waits for a random amount of time, between \textbf{float.Epsilon} and \textbf{maxDecisionInterval}, at every iteration.\\\\
-The coroutine is in charge of updating the value of \textbf{\_circleCenter} and \textbf{\_circleRadius}. The radius is random between the maximun radius minus the agent size and \textbf{float.Epsilon}.\\\\
+The coroutine \textbf{ChooseNextCircle()} is an infinite loop that waits for a random amount of time, between \textbf{float.Epsilon} and \textbf{maxDecisionInterval}, at every iteration.\\\\
+The coroutine is in charge of updating the values of \textbf{\_circleCenter} and \textbf{\_circleRadius}. The radius is random between the maximum radius minus the agent size and \textbf{float.Epsilon}.\\\\
 The circle center is simply calculated displacing the current agent position left or right by the radius.\\\\
-At every iteracton \textbf{\_direction} is inverted.
+At every iteration \textbf{\_direction} is inverted.
 
 \begin{lstlisting}[caption={Decision procedure}]
     void Start() {
@@ -200,8 +199,8 @@ At every iteracton \textbf{\_direction} is inverted.
 \end{lstlisting}
 
 \subsection{Motion}
-The agent motion is implemented in the \textbf{FixedUpdate} method simply by rotation the agent around the circle center.\\\\
-The angle of the rotation is calculated based on the agent speed and the circle perimeter, capped to the \textbf{maxRotationSpeed}.
+The agent motion is implemented in the \textbf{FixedUpdate} method simply by rotating the agent around the circle center.\\\\
+The angle of the rotation (per second) is calculated based on the agent speed and the circle perimeter, capped to the \textbf{maxRotationSpeed}.
 \begin{lstlisting}[caption={FixedUpdate}]
    void FixedUpdate() {
         // Cap the maximun rotation speed to avoid ultra fast spinning on small circles
@@ -214,12 +213,12 @@ The angle of the rotation is calculated based on the agent speed and the circle 
 \end{lstlisting}
 
 \subsection{Calculating the maximum safe radius}
-The calculation of the maximum safe radius is splitted in 4 steps:
+The calculation of the maximum safe radius is divided in 4 steps:
 \begin{enumerate}
-\item Rotate the coordinate system to have the plaftorm axis aligned.
+\item Rotate the coordinate system to have the platform axis aligned.
 \item Calculate the platform extents.
-\item Calculate the maximum safe radius for every edges of the platform.
-\item Return the minimun of the 4 safe radius calculated.
+\item Calculate the maximum safe radius for every edge of the platform.
+\item Return the minimum of the 4 safe radius calculated.
 \end{enumerate}
 \begin{lstlisting}[caption={MaxRadius}]
     private float MaxRadius(float direction) {
@@ -244,22 +243,21 @@ The calculation of the maximum safe radius is splitted in 4 steps:
 \end{lstlisting}
 To get the platform extends we can query the \textbf{sharedMesh} bounds of the \textbf{MeshCollider} and scale them based on the platform \textbf{lossyScale}.
 Note that unless the platform is no longer a rectangle the \textbf{lossyScale} is exact.\\\\
-All the code in the project query the information when needed avoiding caching them to better allow real time changes, while this can be changed to improve performance for the scope of this project the ability
-to see changes in real time was prefered.
+All the code in the project query informations when needed avoiding caching them to better allow for real time changes, while this can be changed to improve performances, for the scope of this project, the ability to see changes in real time was preferred.
 \clearpage
-\noindent To get the maximum radius for a single axis aligned edge we should conside the following situation:
+\noindent To get the maximum radius for a single axis aligned edge we should consider the following situation:
 \begin{center}
     \centering
     \includegraphics[width=0.75\textwidth]{draw.png}
     \captionof{figure}{Geometrical situation}
 \end{center}
-The center of the circle $C$ can be determinate from the agent position $A$, the radius $r$ and the right direction $\hat{d}$:
+The center of the circle $C$ can be determinated from the agent position $A$, the radius $r$ and the right direction $\hat{d}$:
 \[
-C = A + r \hat{d}
+C = A + r \hat{d}\text{, with }\|\hat{d}\|=1
 \]
-The radius $r$ is also the distance from the platform border $P$, as we are axis aligned:
+The radius $r$ is also the distance of the circle center from the platform border $P$, as we are axis aligned:
 \[
-r = C_x-P_x
+r = P_x-C_x
 \]
 Putting all together:
 \[
@@ -269,7 +267,7 @@ Solving for $r$ we get:
 \[
 r = \dfrac{P_x-A_x}{1+\hat{d}_x}
 \]
-Note that the project we keep the agent center never reach the edge of the platform so the numerator can never be zero, and even if the denominator is zero we get, by floating point IEEE 754 arithmetic, a infinite value that will not get 
+Note that in the project the agent center never reaches the edge of the platform, so the numerator can never be zero, and even if the denominator is zero we get, by floating point IEEE 754 arithmetic, an infinite value that will not get 
 past the pick of the minimum of the 4 edges.\\\\
 Mutatis mutandis for the other 3 edges.
 \subsection{Gizmos}
@@ -277,16 +275,16 @@ To better debug the project Gizmos showing the maximum radius and the current tr
 \begin{lstlisting}[caption={Gizmos drawing}]
     void OnDrawGizmos() {
         if (drawDebugGizmos) {
-            Vector3 offset = (platform.transform.position.y+0.01f)*Vector3.up;
+            Vector3 offset = (platform.transform.position.y-transform.position.y+0.01f)*Vector3.up;
             Gizmos.color = Color.blue;
-            Gizmos.DrawWireSphere(_circleCenter+offset, _circleRadius);
+            DrawCircle(_circleCenter+offset, _circleRadius);
             Gizmos.color = Color.red;
-            Gizmos.DrawWireSphere(transform.position+transform.right*MaxRadius(1.0f)+offset, MaxRadius(1.0f));
-            Gizmos.DrawWireSphere(transform.position-transform.right*MaxRadius(-1.0f)+offset, MaxRadius(-1.0f));
+            DrawCircle(transform.position+transform.right*MaxRadius(1.0f)+offset, MaxRadius(1.0f));
+            DrawCircle(transform.position-transform.right*MaxRadius(-1.0f)+offset, MaxRadius(-1.0f));
         }
     }
 \end{lstlisting}
-The method \textbf{OnDrawGizmos()} get called even when the agent is not selected, this allows to see the maximal radius when editing the platform size, orientation and position from the editor.
+The method \textbf{OnDrawGizmos()} get called even when the agent is not selected, this allows to see the maximum radius when editing the platform size, orientation and position from the editor.
 \begin{center}
     \centering
     \includegraphics[width=0.8\textwidth]{gizmos.png}

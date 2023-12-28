@@ -61,12 +61,21 @@ public class Agent : MonoBehaviour {
 
     void OnDrawGizmos() {
         if (drawDebugGizmos) {
-            Vector3 offset = (platform.transform.position.y+0.01f)*Vector3.up;
+            Vector3 offset = (platform.transform.position.y-transform.position.y+0.01f)*Vector3.up;
             Gizmos.color = Color.blue;
-            Gizmos.DrawWireSphere(_circleCenter+offset, _circleRadius);
+            DrawCircle(_circleCenter+offset, _circleRadius);
             Gizmos.color = Color.red;
-            Gizmos.DrawWireSphere(transform.position+transform.right*MaxRadius(1.0f)+offset, MaxRadius(1.0f));
-            Gizmos.DrawWireSphere(transform.position-transform.right*MaxRadius(-1.0f)+offset, MaxRadius(-1.0f));
+            DrawCircle(transform.position+transform.right*MaxRadius(1.0f)+offset, MaxRadius(1.0f));
+            DrawCircle(transform.position-transform.right*MaxRadius(-1.0f)+offset, MaxRadius(-1.0f));
+        }
+    }
+
+    void DrawCircle(Vector3 center, float radius) {
+        Vector3 prev = center + radius*Vector3.right;
+        for (int i = 0; i < 72; i++) {
+            Vector3 next = Quaternion.AngleAxis(5, Vector3.up)*(prev-center)+center;
+            Gizmos.DrawLine(prev, next);
+            prev = next;
         }
     }
 }
